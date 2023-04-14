@@ -1,6 +1,7 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session')
+const session = require('express-session');
+const path = require('path');
 
 const app = express()
 const port = 3001
@@ -10,6 +11,9 @@ app.use(bodyParser.json());
 
 // This line of code will parse incoming URL-encoded data and make it available on the req.body object.
 app.use(bodyParser.urlencoded({extended:true}));
+
+// Tells the server that the static files like css and javascript are in the public directory
+app.use(express.static('public'));
 
 app.use(session({
   secret: 'mySecret',
@@ -30,9 +34,12 @@ const QUESTIONS = [{
 
 
 const SUBMISSION = []
+app.get('/', function(req,res){
+res.sendFile(path.join(__dirname,'index.html'));
+})
 
 app.get('/signup', function(req,res){
-  res.sendFile(__dirname + '/signup.html');
+  res.sendFile(path.join(__dirname,'auth','signup.html'));
 });
 
 app.post('/signup', function(req, res) {
@@ -57,7 +64,7 @@ app.post('/signup', function(req, res) {
   console.log(USERS);
 });
 app.get('/login',function(req,res){
-  res.sendFile(__dirname + '/login.html');
+  res.sendFile(path.join(__dirname,'auth','login.html'));
 })
 app.post('/login', function(req, res) {
   // Add logic to decode body
@@ -91,7 +98,7 @@ app.get('/dashboard', (req, res) => {
     res.send('Welcome to the dashboard');
   } else {
     // redirect the user to the login page
-    res.redirect('/login');
+    res.redirect(path.join(__dirname,'auth','login.html'));
   }
 });
 
